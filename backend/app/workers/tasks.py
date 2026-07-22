@@ -50,19 +50,20 @@ async def async_generate_report(interview_id: str):
         
         for idx, resp in enumerate(interview.get("responses", [])):
             q_label = f"Q{idx+1}"
+            has_ans = bool(resp.get("answer_text", "").strip())
             
             # Confidence score
             webcam = resp.get("webcam_metrics") or {}
             conf_val = webcam.get("confidence_estimate")
             if conf_val is None:
-                conf_val = 80.0
-            confidence_timeline.append({"label": q_label, "value": float(conf_val)})
+                conf_val = 75.0 if has_ans else 0.0
+            confidence_timeline.append({"label": q_label, "value": max(0.0, float(conf_val))})
             
             # Speaking speed
             speed_val = webcam.get("speaking_speed_wpm")
             if speed_val is None:
-                speed_val = 130.0
-            speaking_speed_timeline.append({"label": q_label, "value": float(speed_val)})
+                speed_val = 130.0 if has_ans else 0.0
+            speaking_speed_timeline.append({"label": q_label, "value": max(0.0, float(speed_val))})
             
         report_data["confidence_timeline"] = confidence_timeline
         report_data["speaking_speed_timeline"] = speaking_speed_timeline

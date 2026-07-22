@@ -262,8 +262,16 @@ Follow these guidelines:
     async def generate_final_report(self, interview_doc: Dict[str, Any]) -> Dict[str, Any]:
         logger.info(f"Generating final interview evaluation report for {interview_doc.get('_id')}...")
         
+        responses = interview_doc.get("responses", [])
+        valid_responses = [r for r in responses if r.get("answer_text", "").strip()]
+        
+        # If candidate submitted 0 answers or aborted before responding
+        if len(valid_responses) == 0:
+            logger.info("Candidate submitted 0 answered questions. Generating 0% report dossier.")
+            return self._get_fallback_report_structure(interview_doc)
+        
         transcript_lines = []
-        for i, resp in enumerate(interview_doc.get("responses", [])):
+        for i, resp in enumerate(valid_responses):
             q_text = resp.get("question_text", "Question")
             ans = resp.get("answer_text", "")
             transcript_lines.append(f"Q{i+1}: {q_text}\nA{i+1}: {ans}")
@@ -284,9 +292,18 @@ Follow these guidelines:
                 response_str = response_str[:-3]
             response_str = response_str.strip()
             report_data = json.loads(response_str)
+            
+            # Ensure scores are normalized and non-negative
+            if "scores" in report_data and isinstance(report_data["scores"], dict):
+                for k, v in report_data["scores"].items():
+                    try:
+                        val = float(v)
+                        report_data["scores"][k] = max(0.0, min(100.0, round(val, 1)))
+                    except Exception:
+                        report_data["scores"][k] = 0.0
         except Exception as e:
             logger.error(f"Failed to parse final report: {e}. Generating default score metrics.")
-            report_data = self._get_fallback_report_structure()
+            report_data = self._get_fallback_report_structure(interview_doc)
 
         return report_data
 
@@ -478,49 +495,94 @@ Follow these guidelines:
             }
         ]
 
-    def _get_fallback_report_structure(self) -> Dict[str, Any]:
+    def _get_fallback_report_structure(self, interview_doc: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        responses = interview_doc.get("responses", []) if interview_doc else []
+        valid_responses = [r for r in responses if r.get("answer_text", "").strip()]
+        
+        if len(valid_responses) == 0:
+            return {
+                "summary": "No candidate responses were captured during this interview session. Evaluation criteria scores are 0%.",
+                "scores": {
+                    "overall": 0.0,
+                    "communication": 0.0,
+                    "technical": 0.0,
+                    "problem_solving": 0.0,
+                    "confidence": 0.0,
+                    "grammar": 0.0,
+                    "vocabulary": 0.0,
+                    "body_language": 0.0,
+                    "speaking_speed": 0.0,
+                    "response_quality": 0.0,
+                    "depth_of_knowledge": 0.0
+                },
+                "strengths": [],
+                "weaknesses": [
+                    "No answer responses were provided for evaluation."
+                ],
+                "mistakes": [
+                    "Session ended without answering questions."
+                ],
+                "recommended_topics": [
+                    "Practice answering technical questions out loud"
+                ],
+                "recommended_resources": [
+                    "Article: AI Mock Interview Preparation Guidelines"
+                ],
+                "actionable_improvement_plan": [
+                    "Attempt each question in full to receive detailed evaluation metrics."
+                ]
+            }
+            
+        # Dynamically compute scores from actual response evaluations & webcam metrics
+        eval_scores = []
+        conf_scores = []
+        for r in valid_responses:
+            ev = r.get("evaluation") or {}
+            if "score" in ev:
+                eval_scores.append(float(ev["score"]))
+            wm = r.get("webcam_metrics") or {}
+            if "confidence_estimate" in wm:
+                conf_scores.append(float(wm["confidence_estimate"]))
+                
+        base_score = round(sum(eval_scores) / len(eval_scores), 1) if eval_scores else 65.0
+        conf_score = round(sum(conf_scores) / len(conf_scores), 1) if conf_scores else 70.0
+        
+        def clamp(val):
+            return max(0.0, min(100.0, float(val)))
+            
         return {
-            "summary": "The candidate displayed strong technical foundations in coding and backend system architecture. Communication was clear and structured, though some behavioral responses lacked concrete examples using the STAR methodology. Performance was competitive and solid overall.",
+            "summary": f"The candidate answered {len(valid_responses)} questions. Scores have been evaluated dynamically based on response clarity, technical criteria, and presence.",
             "scores": {
-                "overall": 82.0,
-                "communication": 80.0,
-                "technical": 85.0,
-                "problem_solving": 84.0,
-                "confidence": 78.0,
-                "grammar": 90.0,
-                "vocabulary": 85.0,
-                "body_language": 75.0,
-                "speaking_speed": 82.0,
-                "response_quality": 83.0,
-                "depth_of_knowledge": 84.0
+                "overall": clamp(base_score),
+                "communication": clamp(round(base_score * 0.95, 1)),
+                "technical": clamp(base_score),
+                "problem_solving": clamp(round(base_score * 0.98, 1)),
+                "confidence": clamp(conf_score),
+                "grammar": clamp(round(base_score * 1.02, 1)),
+                "vocabulary": clamp(base_score),
+                "body_language": clamp(conf_score),
+                "speaking_speed": clamp(conf_score),
+                "response_quality": clamp(base_score),
+                "depth_of_knowledge": clamp(base_score)
             },
             "strengths": [
-                "Excellent grasp of Big-O notations and string array problems.",
-                "Professional demeanor and concise explanation of distributed microservice architecture.",
-                "Good technical grammar and vocabulary accuracy."
+                "Attempted responses with clear structure."
             ],
             "weaknesses": [
-                "Behavioral answers should include concrete metrics and target results.",
-                "Posture and eye-contact dropped slightly during hard coding challenges.",
-                "A few moments of hesitation with filler words (e.g. 'um', 'like')."
+                "Elaborate further with real-world technical trade-offs."
             ],
             "mistakes": [
-                "Initially overlooked empty string inputs in the coding question before corrected."
+                "Some explanations could benefit from concrete examples."
             ],
             "recommended_topics": [
-                "STAR alignment for behavioral interviews",
-                "Distributed consistency models (CAP Theorem, PACELC)",
-                "Non-verbal interview confidence mechanics"
+                "System architecture principles",
+                "Behavioral STAR framework"
             ],
             "recommended_resources": [
-                "Book: Cracking the Coding Interview by Gayle Laakmann McDowell",
-                "Web: System Design Primer (github.com/donnemartin/system-design-primer)",
-                "Article: 'The STAR Method Explained' on ResumeGenius"
+                "Book: Cracking the Coding Interview"
             ],
             "actionable_improvement_plan": [
-                "Practice writing coding solutions out loud to improve concurrent speaking speed.",
-                "Structure project descriptions using: Situation, Task, Action, Result framework.",
-                "Configure a steady desk height to ensure webcam posture remains neutral."
+                "Practice speaking solutions out loud before concluding answers."
             ]
         }
 
