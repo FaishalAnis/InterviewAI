@@ -75,10 +75,19 @@ class AIService:
     def __init__(self):
         self.openai_client = None
         self.gemini_enabled = False
+        self.is_openrouter = False
 
         if settings.OPENAI_API_KEY:
-            self.openai_client = OpenAI(api_key=settings.OPENAI_API_KEY)
-            logger.info("OpenAI client initialized for AIService.")
+            if settings.OPENAI_API_KEY.startswith("sk-or-"):
+                self.openai_client = OpenAI(
+                    api_key=settings.OPENAI_API_KEY,
+                    base_url="https://openrouter.ai/api/v1"
+                )
+                self.is_openrouter = True
+                logger.info("OpenRouter client initialized for AIService.")
+            else:
+                self.openai_client = OpenAI(api_key=settings.OPENAI_API_KEY)
+                logger.info("OpenAI client initialized for AIService.")
         elif settings.GEMINI_API_KEY:
             genai.configure(api_key=settings.GEMINI_API_KEY)
             self.gemini_enabled = True
@@ -89,8 +98,10 @@ class AIService:
     def _call_llm(self, system_prompt: str, user_prompt: str, response_format_json: bool = False) -> str:
         if self.openai_client:
             try:
+                model_name = "openai/gpt-4o" if self.is_openrouter else "gpt-4o"
                 response = self.openai_client.chat.completions.create(
-                    model="gpt-4o",
+                    model=model_name,
+                    max_tokens=2048,
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
@@ -100,7 +111,7 @@ class AIService:
                 )
                 return response.choices[0].message.content.strip()
             except Exception as e:
-                logger.error(f"OpenAI API call failed: {e}. Falling back...")
+                logger.error(f"OpenAI/OpenRouter API call failed: {e}. Falling back...")
         
         if self.gemini_enabled:
             try:
