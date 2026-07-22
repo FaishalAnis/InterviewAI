@@ -1,11 +1,21 @@
 import os
-from typing import List, Optional
-from pydantic import AnyHttpUrl, BeforeValidator, Field
+from typing import List, Optional, Union, Any
+from pydantic import BeforeValidator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Annotated
 
-def parse_cors(v: str | List[str]) -> List[str]:
-    if isinstance(v, str) and not v.startswith("["):
+def parse_cors(v: Any) -> List[str]:
+    if isinstance(v, str):
+        if not v.strip():
+            return ["*"]
+        if v.startswith("["):
+            try:
+                import json
+                parsed = json.loads(v)
+                if isinstance(parsed, list):
+                    return parsed
+            except Exception:
+                pass
         return [i.strip() for i in v.split(",")]
     elif isinstance(v, list):
         return v
@@ -27,7 +37,7 @@ class Settings(BaseSettings):
     
     # CORS
     BACKEND_CORS_ORIGINS: Annotated[
-        List[str], BeforeValidator(parse_cors)
+        Union[List[str], str], BeforeValidator(parse_cors)
     ] = ["*"]
 
     # Database
