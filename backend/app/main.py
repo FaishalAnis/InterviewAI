@@ -32,13 +32,13 @@ async def lifespan(app: FastAPI):
     await close_mongo_connection()
 
 async def create_seed_admin():
-    # Seeds the initial superuser if not exists
+    # Seeds the initial superuser if not exists, or refreshes password hash
     try:
         col = get_users_collection()
         admin_user = await col.find_one({"email": settings.FIRST_SUPERUSER_EMAIL})
+        hashed_pw = get_password_hash(settings.FIRST_SUPERUSER_PASSWORD)
         if not admin_user:
             logger.info("Creating seed superuser...")
-            hashed_pw = get_password_hash(settings.FIRST_SUPERUSER_PASSWORD)
             superuser = {
                 "email": settings.FIRST_SUPERUSER_EMAIL,
                 "full_name": "Admin Superuser",
@@ -50,6 +50,12 @@ async def create_seed_admin():
             }
             await col.insert_one(superuser)
             logger.info("Seed superuser created successfully.")
+        else:
+            await col.update_one(
+                {"email": settings.FIRST_SUPERUSER_EMAIL},
+                {"$set": {"hashed_password": hashed_pw}}
+            )
+            logger.info("Seed superuser password updated successfully.")
     except Exception as e:
         logger.error(f"Failed to create seed superuser: {e}")
 
