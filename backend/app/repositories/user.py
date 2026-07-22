@@ -11,7 +11,11 @@ class UserRepository(BaseRepository):
         self.profile_collection = get_profiles_collection()
 
     async def get_by_email(self, email: str) -> Optional[Dict[str, Any]]:
-        return await self.get_by_field("email", email)
+        clean_email = email.lower().strip()
+        user = await self.collection.find_one({"email": {"$regex": f"^{clean_email}$", "$options": "i"}})
+        if user and "_id" in user:
+            user["id"] = str(user.pop("_id"))
+        return user
 
     async def create_user(self, user_in: Dict[str, Any]) -> Dict[str, Any]:
         user_data = user_in.copy()
