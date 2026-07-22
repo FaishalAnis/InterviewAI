@@ -201,7 +201,19 @@ Follow these guidelines:
             if response_str.endswith("```"):
                 response_str = response_str[:-3]
             response_str = response_str.strip()
-            return json.loads(response_str)
+            
+            parsed = json.loads(response_str)
+            if isinstance(parsed, dict):
+                if "questions" in parsed:
+                    return parsed["questions"]
+                elif "questions_list" in parsed:
+                    return parsed["questions_list"]
+                else:
+                    return [parsed]
+            elif isinstance(parsed, list):
+                return parsed
+            else:
+                raise ValueError("Parsed JSON is neither a list nor a dict")
         except Exception as e:
             logger.error(f"Failed to parse AI generated questions: {e}. Returning fallback list.")
             return self._get_fallback_questions(interview_type, difficulty, mode)

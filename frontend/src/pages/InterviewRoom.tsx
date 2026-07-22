@@ -30,13 +30,24 @@ export const InterviewRoom: React.FC = () => {
   const [webcamEnabled, setWebcamEnabled] = useState(true);
   const [stream, setStream] = useState<MediaStream | null>(null);
 
+  // Resolve current active question
+  const questions = interview?.questions || [];
+  const currentIdx = interview?.current_question_index || 0;
+  const isFinished = currentIdx >= questions.length;
+
   // Tab switching tracking
   const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const [showTabWarning, setShowTabWarning] = useState(false);
   const lastTabSwitchRef = useRef<number>(0);
+  const isRunningRef = useRef(false);
+
+  useEffect(() => {
+    isRunningRef.current = !loading && !isFinished && interview !== null;
+  }, [loading, isFinished, interview]);
 
   useEffect(() => {
     const recordTabSwitch = () => {
+      if (!isRunningRef.current) return;
       const now = Date.now();
       // Throttle to avoid double counting from blur + visibilitychange firing together
       if (now - lastTabSwitchRef.current > 1500) {
@@ -104,11 +115,6 @@ export const InterviewRoom: React.FC = () => {
   } = useSpeech();
 
   useSocket(id);
-
-  // Resolve current active question
-  const questions = interview?.questions || [];
-  const currentIdx = interview?.current_question_index || 0;
-  const isFinished = currentIdx >= questions.length;
 
   // Fetch Interview Session
   useEffect(() => {
