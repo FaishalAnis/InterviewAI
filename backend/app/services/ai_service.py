@@ -157,7 +157,7 @@ Follow these guidelines:
         
         if mode == "coding":
             user_prompt = """
-            Generate a list of exactly 5 coding interview questions.
+            Generate exactly 5 coding interview questions.
             Every question MUST be a coding challenge where the candidate will write code to solve it.
             For each question, you MUST include the "coding_metadata" containing:
               - "title": Problem Title
@@ -171,26 +171,40 @@ Follow these guidelines:
                   If the function takes a single string, "input" must be '["string_value"]'.
                   If the function takes an array and a number, "input" must be '[[1, 2, 3], 4]'.
                   If the function takes a single array, "input" must be '[[1, 2, 3]]'.
-            Return a JSON array of objects, each object containing:
-            - "id": a unique string key like "q1", "q2"
-            - "text": a short statement of the problem / coding task
-            - "category": "coding"
-            - "difficulty": "easy", "medium", "hard"
-            - "expected_criteria": list of strings (evaluation criteria keywords)
-            - "coding_metadata": dict (matching the coding question schema)
-            Return ONLY the raw JSON array. Do not wrap in backticks.
+            Return a JSON object containing a "questions" key with a list of exactly 5 question objects. Format:
+            {
+              "questions": [
+                {
+                  "id": "q1",
+                  "text": "short statement of the problem / coding task",
+                  "category": "coding",
+                  "difficulty": "easy",
+                  "expected_criteria": ["keyword1", "keyword2"],
+                  "coding_metadata": { ... }
+                },
+                ...
+              ]
+            }
+            Ensure the response is valid JSON.
             """
         else:
             user_prompt = """
-            Generate a list of exactly 5 interview questions.
+            Generate exactly 5 interview questions.
             The questions must cover technical knowledge, behavioral skills, and scenario-based problem solving.
-            Return a JSON array of objects, each object containing:
-            - "id": a unique string key like "q1", "q2"
-            - "text": string question content
-            - "category": e.g. "technical", "behavioral", "system_design"
-            - "difficulty": "easy", "medium", "hard"
-            - "expected_criteria": list of strings (evaluation criteria keywords)
-            Return ONLY the raw JSON array. Do not wrap in backticks.
+            Return a JSON object containing a "questions" key with a list of exactly 5 question objects. Format:
+            {
+              "questions": [
+                {
+                  "id": "q1",
+                  "text": "string question content",
+                  "category": "technical",
+                  "difficulty": "medium",
+                  "expected_criteria": ["keyword1", "keyword2"]
+                },
+                ...
+              ]
+            }
+            Ensure the response is valid JSON.
             """
         
         response_str = self._call_llm(system_prompt, user_prompt, response_format_json=True)
