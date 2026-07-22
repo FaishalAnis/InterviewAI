@@ -29,6 +29,7 @@ export const InterviewRoom: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [webcamEnabled, setWebcamEnabled] = useState(true);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [seconds, setSeconds] = useState(0);
 
   // Resolve current active question
   const questions = interview?.questions || [];
@@ -42,8 +43,8 @@ export const InterviewRoom: React.FC = () => {
   const isRunningRef = useRef(false);
 
   useEffect(() => {
-    isRunningRef.current = !loading && !isFinished && interview !== null;
-  }, [loading, isFinished, interview]);
+    isRunningRef.current = !loading && !isFinished && interview !== null && seconds > 5;
+  }, [loading, isFinished, interview, seconds]);
 
   useEffect(() => {
     const recordTabSwitch = () => {
@@ -101,7 +102,6 @@ export const InterviewRoom: React.FC = () => {
   const [followUpPrompt, setFollowUpPrompt] = useState<string | null>(null);
 
   // Timer states
-  const [seconds, setSeconds] = useState(0);
 
   // Hooks
   const {
