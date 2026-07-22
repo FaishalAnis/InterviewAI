@@ -2,6 +2,9 @@ import axios from "axios";
 
 let rawUrl = import.meta.env.VITE_API_URL || "/api/v1";
 if (rawUrl && !rawUrl.startsWith("http") && !rawUrl.startsWith("/")) {
+  if (!rawUrl.includes(".")) {
+    rawUrl = `${rawUrl}.onrender.com`;
+  }
   rawUrl = `https://${rawUrl}`;
 }
 if (rawUrl.startsWith("http") && !rawUrl.endsWith("/api/v1")) {
