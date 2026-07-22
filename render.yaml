@@ -16,11 +16,10 @@ services:
         sync: false # User will provide their MongoDB Atlas connection string in Render Dashboard
 
   # Frontend Static Site
-  - type: web
+  - type: static
     name: interviewai-frontend
-    env: static
     buildCommand: cd frontend && npm install && npm run build
-    publishDir: frontend/dist
+    staticPublishPath: ./frontend/dist
     envVars:
       - key: VITE_API_URL
         fromService:
