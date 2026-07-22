@@ -7,9 +7,9 @@ from typing_extensions import Annotated
 def parse_cors(v: str | List[str]) -> List[str]:
     if isinstance(v, str) and not v.startswith("["):
         return [i.strip() for i in v.split(",")]
-    elif isinstance(v, (list, str)):
+    elif isinstance(v, list):
         return v
-    raise ValueError(v)
+    return ["*"]
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     # CORS
     BACKEND_CORS_ORIGINS: Annotated[
         List[str], BeforeValidator(parse_cors)
-    ] = ["http://localhost", "http://localhost:5173", "http://localhost:3000"]
+    ] = ["*"]
 
     # Database
     MONGODB_URL: str = "mongodb://mongodb:27017"
