@@ -38,7 +38,9 @@ export const Signup: React.FC = () => {
       await signup(data.email, data.fullName, data.password);
       navigate("/");
     } catch (err: any) {
-      setErrorMsg(err.response?.data?.detail || "Registration failed. Email might already exist.");
+      const detail = err.response?.data?.detail;
+      const message = typeof detail === "string" ? detail : (Array.isArray(detail) ? detail[0]?.msg : null);
+      setErrorMsg(message || err.message || "Registration failed. Email might already exist.");
     }
   };
 

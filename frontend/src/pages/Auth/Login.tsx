@@ -38,7 +38,9 @@ export const Login: React.FC = () => {
       await login(data.email, data.password, data.rememberMe);
       navigate("/");
     } catch (err: any) {
-      setErrorMsg(err.response?.data?.detail || "Invalid email or password.");
+      const detail = err.response?.data?.detail;
+      const message = typeof detail === "string" ? detail : (Array.isArray(detail) ? detail[0]?.msg : null);
+      setErrorMsg(message || err.message || "Invalid email or password.");
     }
   };
 
