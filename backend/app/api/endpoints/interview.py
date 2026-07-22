@@ -1,6 +1,6 @@
 import json
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form, Body
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form, Body, BackgroundTasks
 from app.api.deps import get_current_user
 from app.repositories.interview import InterviewRepository
 from app.repositories.user import UserRepository
@@ -9,7 +9,7 @@ from app.services.ai_service import ai_service
 from app.services.whisper_service import whisper_service
 from app.services.video_analysis import webcam_analyzer
 from app.services.storage_service import storage_service
-from app.workers.tasks import generate_report_task
+from app.workers.tasks import async_generate_report
 from datetime import datetime
 
 router = APIRouter()
@@ -178,6 +178,7 @@ async def submit_response(
 @router.post("/{id}/complete")
 async def complete_interview(
     id: str,
+    background_tasks: BackgroundTasks,
     req_body: Optional[InterviewComplete] = None,
     current_user: Dict[str, Any] = Depends(get_current_user)
 ) -> Any:
@@ -197,14 +198,9 @@ async def complete_interview(
     user_repo = UserRepository()
     await user_repo.update_streak(current_user["id"])
 
-    # Trigger Celery Worker background task for evaluation and PDF report generation
-    # If Celery isn't running, generate_report_task can also be imported and run synchronously,
-    # we will trigger Celery task (or local async task if Redis fails)
-    try:
-        generate_report_task.delay(id)
-    except Exception:
-        # Fallback to run synchronously to support local development if Redis/Celery aren't running
-        generate_report_task(id)
+    # Trigger background task for evaluation and PDF report generation natively via FastAPI BackgroundTasks
+    # This prevents blocking the HTTP thread when Redis/Celery is down or inactive
+    background_tasks.add_task(async_generate_report, id)
         
     return {
         "message": "Interview completed successfully. Report generation triggered.",
