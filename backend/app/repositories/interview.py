@@ -29,19 +29,23 @@ class InterviewRepository(BaseRepository):
         )
         return await self.get(interview_id)
 
-    async def complete_interview(self, interview_id: str) -> Optional[Dict[str, Any]]:
+    async def complete_interview(self, interview_id: str, tab_switches: Optional[int] = None) -> Optional[Dict[str, Any]]:
         try:
             query = {"_id": ObjectId(interview_id)}
         except Exception:
             query = {"_id": interview_id}
             
+        update_doc = {
+            "status": "completed",
+            "completed_at": datetime.utcnow()
+        }
+        if tab_switches is not None:
+            update_doc["tab_switch_violations"] = tab_switches
+
         await self.collection.update_one(
             query,
             {
-                "$set": {
-                    "status": "completed",
-                    "completed_at": datetime.utcnow()
-                }
+                "$set": update_doc
             }
         )
         return await self.get(interview_id)

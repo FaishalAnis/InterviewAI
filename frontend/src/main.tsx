@@ -12,11 +12,13 @@ import { Landing } from "./pages/Landing";
 import { Login } from "./pages/Auth/Login";
 import { Signup } from "./pages/Auth/Signup";
 import { Dashboard } from "./pages/Dashboard";
+import { StartInterview } from "./pages/StartInterview";
 import { InterviewRoom } from "./pages/InterviewRoom";
 import { Report } from "./pages/Report";
 import { History } from "./pages/History";
 import { Settings } from "./pages/Settings";
 import { Admin } from "./pages/Admin";
+import { Profile } from "./pages/Profile";
 import { NotFound } from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +65,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               }
             />
             <Route
+              path="/start"
+              element={
+                <ProtectedRoute>
+                  <StartInterview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/interview/:id"
               element={
                 <ProtectedRoute>
@@ -98,7 +108,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               path="/profile"
               element={
                 <ProtectedRoute>
-                  <Settings />
+                  <Profile />
                 </ProtectedRoute>
               }
             />

@@ -11,15 +11,15 @@ export const NotFound: React.FC = () => {
           <AlertCircle size={32} />
         </div>
         
-        <h2 className="text-4xl font-extrabold text-white">404 - Page Not Found</h2>
+        <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white">404 - Page Not Found</h2>
         
-        <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
+        <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed">
           The evaluation coordinates you are searching for do not exist or have been removed.
         </p>
 
         <Link
           to="/"
-          className="inline-flex items-center space-x-2 px-5 py-2.5 bg-slate-900 border border-white/10 hover:bg-slate-800 rounded-xl font-bold text-xs text-slate-200 transition"
+          className="inline-flex items-center space-x-2 px-5 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-200 transition border border-slate-300 dark:border-white/10"
         >
           <ArrowLeft size={14} />
           <span>Return Home</span>

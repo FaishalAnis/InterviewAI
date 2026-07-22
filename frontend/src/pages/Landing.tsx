@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../store/authStore";
 import { ShieldCheck, Cpu, Mic, Video, Code, FileText, ArrowRight } from "lucide-react";
@@ -7,6 +7,7 @@ import Layout from "../components/layout/Layout";
 export const Landing: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
+  const [showProModal, setShowProModal] = useState(false);
 
   useEffect(() => {
     if (location.pathname === "/features") {
@@ -23,26 +24,26 @@ export const Landing: React.FC = () => {
       {/* Hero Section */}
       <div className="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden">
         <div className="text-center max-w-4xl mx-auto space-y-6 relative z-10">
-          <div className="inline-flex items-center space-x-2 bg-primary-950/40 border border-primary-500/20 px-3 py-1 rounded-full text-xs font-semibold text-primary-300">
+          <div className="inline-flex items-center space-x-2 bg-primary-100 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-500/20 px-3 py-1 rounded-full text-xs font-semibold text-primary-700 dark:text-primary-300">
             <span>Powered by Gemini & GPT-4o</span>
-            <span className="h-1.5 w-1.5 rounded-full bg-primary-400 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary-500 dark:bg-primary-400 animate-pulse" />
           </div>
           
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-none">
+          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-none">
             Master Your Technical Interviews with <span className="gradient-text">InterviewAI</span>
           </h1>
           
-          <p className="text-base sm:text-xl text-slate-400 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Practice realistic mock interviews under time-pressure. Receive structured feedback, AI voice conversations, webcam posture telemetry, and full-stack coding sandboxes.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             {isAuthenticated ? (
               <Link
-                to="/dashboard"
+                to="/start"
                 className="flex items-center space-x-2 px-6 py-3 gradient-btn rounded-xl font-bold text-white shadow-lg transition"
               >
-                <span>Go to Dashboard</span>
+                <span>Start Mock Session</span>
                 <ArrowRight size={16} />
               </Link>
             ) : (
@@ -56,7 +57,7 @@ export const Landing: React.FC = () => {
                 </Link>
                 <Link
                   to="/login"
-                  className="px-6 py-3 bg-slate-900 hover:bg-slate-800 border border-white/10 rounded-xl font-bold text-slate-200 transition"
+                  className="px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-300 dark:border-white/10 rounded-xl font-bold text-slate-700 dark:text-slate-200 transition"
                 >
                   Schedule Demo
                 </Link>
@@ -67,69 +68,69 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Features Grid */}
-      <div id="features" className="py-16 border-t border-white/5 relative">
+      <div id="features" className="py-16 border-t border-slate-200 dark:border-white/5 relative">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-extrabold text-white">Full-Stack SaaS Platform Built for Scale</h2>
-          <p className="text-slate-400 mt-2">Everything you need to master behavioral, technical, and live coding challenges.</p>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Full-Stack SaaS Platform Built for Scale</h2>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">Everything you need to master behavioral, technical, and live coding challenges.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-white/5 flex flex-col items-start text-left">
-            <div className="p-3 bg-primary-600/20 rounded-xl border border-primary-500/20 text-primary-400 mb-4">
+          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col items-start text-left">
+            <div className="p-3 bg-primary-500/10 dark:bg-primary-600/20 rounded-xl border border-primary-200 dark:border-primary-500/20 text-primary-600 dark:text-primary-400 mb-4">
               <Mic size={24} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">Voice & Conversation Pipeline</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Voice & Conversation Pipeline</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               Integrate local speech recognition and OpenAI Whisper API to conduct natural conversational style interviews with instant transcription.
             </p>
           </div>
 
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-white/5 flex flex-col items-start text-left">
-            <div className="p-3 bg-emerald-600/20 rounded-xl border border-emerald-500/20 text-emerald-400 mb-4">
+          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col items-start text-left">
+            <div className="p-3 bg-emerald-500/10 dark:bg-emerald-600/20 rounded-xl border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 mb-4">
               <Code size={24} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">Monaco Code Sandbox</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Monaco Code Sandbox</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               Solve algorithmic problems in python, javascript, C++, and Go inside a high-fidelity Monaco editor with automatic run & submit test case runner.
             </p>
           </div>
 
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-white/5 flex flex-col items-start text-left">
-            <div className="p-3 bg-indigo-600/20 rounded-xl border border-indigo-500/20 text-indigo-400 mb-4">
+          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col items-start text-left">
+            <div className="p-3 bg-indigo-500/10 dark:bg-indigo-600/20 rounded-xl border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 mb-4">
               <Video size={24} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">Webcam Tracking & Posture</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Webcam Tracking & Posture</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               Evaluate behavioral criteria like eye-contact, smile rate, nervous gestures, speaking speed, and overall candidate confidence metrics in real-time.
             </p>
           </div>
 
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-white/5 flex flex-col items-start text-left">
-            <div className="p-3 bg-yellow-600/20 rounded-xl border border-yellow-500/20 text-yellow-400 mb-4">
+          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col items-start text-left">
+            <div className="p-3 bg-yellow-500/10 dark:bg-yellow-600/20 rounded-xl border border-yellow-200 dark:border-yellow-500/20 text-yellow-600 dark:text-yellow-400 mb-4">
               <FileText size={24} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">Resume & JD Targeting</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Resume & JD Targeting</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               Upload CV documents or copy-paste target job details. Our LLMs tailor mock sessions targeting missing skills and past experience records.
             </p>
           </div>
 
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-white/5 flex flex-col items-start text-left">
-            <div className="p-3 bg-purple-600/20 rounded-xl border border-purple-500/20 text-purple-400 mb-4">
+          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col items-start text-left">
+            <div className="p-3 bg-purple-500/10 dark:bg-purple-600/20 rounded-xl border border-purple-200 dark:border-purple-500/20 text-purple-600 dark:text-purple-400 mb-4">
               <Cpu size={24} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">Structured Evaluation</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Structured Evaluation</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               Get score breakdowns out of 100 for grammar, communication, problem-solving, depth of knowledge, and a printable PDF action checklist.
             </p>
           </div>
 
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-white/5 flex flex-col items-start text-left">
-            <div className="p-3 bg-rose-600/20 rounded-xl border border-rose-500/20 text-rose-400 mb-4">
+          <div className="glass-panel glass-panel-hover p-6 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col items-start text-left">
+            <div className="p-3 bg-rose-500/10 dark:bg-rose-600/20 rounded-xl border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 mb-4">
               <ShieldCheck size={24} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">SaaS Enterprise Security</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">SaaS Enterprise Security</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               Secured with CSRF, rate-limiters, security headers, password hashing, and clean async MongoDB Motor drivers.
             </p>
           </div>
@@ -137,81 +138,112 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Pricing Section */}
-      <div id="pricing" className="py-16 border-t border-white/5 text-center">
+      <div id="pricing" className="py-16 border-t border-slate-200 dark:border-white/5 text-center">
         <div className="mb-12">
-          <h2 className="text-3xl font-extrabold text-white">SaaS Pricing Tiers</h2>
-          <p className="text-slate-400 mt-2">Unlock unlimited mock interviews, CV adjustments, and download reports.</p>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">SaaS Pricing Tiers</h2>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">Unlock unlimited mock interviews, CV adjustments, and download reports.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto gap-8">
           {/* Free Tier */}
-          <div className="glass-panel p-8 rounded-2xl border border-white/5 flex flex-col text-left">
-            <h3 className="text-xl font-bold text-white">Starter</h3>
-            <p className="text-xs text-slate-400 mt-1">Practice baseline interviews</p>
+          <div className="glass-panel p-8 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col text-left">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Starter</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Practice baseline interviews</p>
             <div className="my-6">
-              <span className="text-4xl font-extrabold text-white">$0</span>
-              <span className="text-slate-400 text-sm"> / month</span>
+              <span className="text-4xl font-extrabold text-slate-900 dark:text-white">$0</span>
+              <span className="text-slate-500 dark:text-slate-400 text-sm"> / month</span>
             </div>
-            <ul className="space-y-3 text-sm text-slate-300 mb-8 flex-grow">
+            <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300 mb-8 flex-grow">
               <li className="flex items-center space-x-2">
-                <span className="text-primary-400 font-bold">&#10003;</span>
+                <span className="text-primary-600 dark:text-primary-400 font-bold">&#10003;</span>
                 <span>2 Mock Interviews / month</span>
               </li>
               <li className="flex items-center space-x-2">
-                <span className="text-primary-400 font-bold">&#10003;</span>
+                <span className="text-primary-600 dark:text-primary-400 font-bold">&#10003;</span>
                 <span>Standard technical questions</span>
               </li>
               <li className="flex items-center space-x-2">
-                <span className="text-primary-400 font-bold">&#10003;</span>
+                <span className="text-primary-600 dark:text-primary-400 font-bold">&#10003;</span>
                 <span>On-screen evaluation scores</span>
               </li>
             </ul>
             <Link
               to="/signup"
-              className="w-full text-center py-2.5 bg-slate-900 hover:bg-slate-800 rounded-xl font-bold text-sm text-slate-200 transition border border-white/5"
+              className="w-full text-center py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800 rounded-xl font-bold text-sm text-slate-700 dark:text-slate-200 transition border border-slate-300 dark:border-white/5"
             >
               Get Started
             </Link>
           </div>
 
           {/* Premium Tier */}
-          <div className="glass-panel p-8 rounded-2xl border border-primary-500/25 relative flex flex-col text-left">
+          <div className="glass-panel p-8 rounded-2xl border border-primary-300 dark:border-primary-500/25 relative flex flex-col text-left">
             <div className="absolute top-0 right-6 transform -translate-y-1/2 bg-primary-600 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase text-white shadow-lg">
               Popular
             </div>
-            <h3 className="text-xl font-bold text-white">Pro Coach</h3>
-            <p className="text-xs text-slate-400 mt-1">Complete mock evaluation toolbox</p>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Pro Coach</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Complete mock evaluation toolbox</p>
             <div className="my-6">
-              <span className="text-4xl font-extrabold text-white">$29</span>
-              <span className="text-slate-400 text-sm"> / month</span>
+              <span className="text-4xl font-extrabold text-slate-900 dark:text-white">$29</span>
+              <span className="text-slate-500 dark:text-slate-400 text-sm"> / month</span>
             </div>
-            <ul className="space-y-3 text-sm text-slate-300 mb-8 flex-grow">
+            <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300 mb-8 flex-grow">
               <li className="flex items-center space-x-2">
-                <span className="text-primary-400 font-bold">&#10003;</span>
+                <span className="text-primary-600 dark:text-primary-400 font-bold">&#10003;</span>
                 <span>Unlimited Mock Interviews</span>
               </li>
               <li className="flex items-center space-x-2">
-                <span className="text-primary-400 font-bold">&#10003;</span>
+                <span className="text-primary-600 dark:text-primary-400 font-bold">&#10003;</span>
                 <span>Monaco Code sandbox compiling</span>
               </li>
               <li className="flex items-center space-x-2">
-                <span className="text-primary-400 font-bold">&#10003;</span>
+                <span className="text-primary-600 dark:text-primary-400 font-bold">&#10003;</span>
                 <span>Webcam & voice evaluation pipelines</span>
               </li>
               <li className="flex items-center space-x-2">
-                <span className="text-primary-400 font-bold">&#10003;</span>
+                <span className="text-primary-600 dark:text-primary-400 font-bold">&#10003;</span>
                 <span>PDF Report downloads</span>
               </li>
             </ul>
-            <Link
-              to="/signup"
-              className="w-full text-center py-2.5 gradient-btn rounded-xl font-bold text-sm text-white shadow-md transition"
+            <button
+              onClick={() => setShowProModal(true)}
+              className="w-full text-center py-2.5 gradient-btn rounded-xl font-bold text-sm text-white shadow-md transition cursor-pointer"
             >
               Unlock Pro Access
-            </Link>
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Pro Access Modal */}
+      {showProModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-white/10 shadow-2xl relative space-y-5 animate-in fade-in zoom-in duration-200 text-left bg-slate-900/90">
+            <div className="h-12 w-12 rounded-2xl bg-primary-500/10 text-primary-400 border border-primary-500/20 flex items-center justify-center">
+              <ShieldCheck size={24} />
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white leading-none">
+                Beta Development Phase
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Paid plans are currently disabled.
+              </p>
+            </div>
+            
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              InterviewAI is in its active public beta testing phase. We are committed to keeping all premium services—including Monaco sandboxes, webcam posture analytics, and detailed report metrics—<strong>100% free of charge</strong> during this time!
+            </p>
+            
+            <button
+              onClick={() => setShowProModal(false)}
+              className="w-full py-3 bg-gradient-to-r from-primary-600 to-indigo-600 rounded-xl font-bold text-sm text-white shadow-lg transition hover:-translate-y-0.5 active:translate-y-0"
+            >
+              Got it, thanks!
+            </button>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };

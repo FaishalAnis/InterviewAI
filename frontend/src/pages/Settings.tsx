@@ -5,7 +5,7 @@ import { Layout } from "../components/layout/Layout";
 import { Save, Key, Trash2, RefreshCw } from "lucide-react";
 
 export const Settings: React.FC = () => {
-  const { user, profile, updateProfile, logout } = useAuth();
+  const { profile, updateProfile, logout } = useAuth();
   
   // Profile form states
   const [skillsText, setSkillsText] = useState(profile?.skills?.join(", ") || "");
@@ -73,22 +73,22 @@ export const Settings: React.FC = () => {
     <Layout>
       <div className="space-y-8 flex-grow max-w-3xl mx-auto">
         <div>
-          <h2 className="text-3xl font-extrabold text-white">Settings</h2>
-          <p className="text-sm text-slate-400 mt-1">Configure profile details, manage access credentials, and close your account.</p>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Settings</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Configure profile details, manage access credentials, and close your account.</p>
         </div>
 
         <div className="grid grid-cols-1 gap-6">
           {/* Profile form */}
-          <div className="glass-panel rounded-3xl p-6 border border-white/5 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center space-x-2">
-              <Save className="text-primary-400" size={16} />
+          <div className="glass-panel rounded-3xl p-6 border border-slate-200 dark:border-white/5 space-y-4">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+              <Save className="text-primary-500 dark:text-primary-400" size={16} />
               <span>Update Profile & Experience</span>
             </h3>
 
             <form onSubmit={handleSaveProfile} className="space-y-4 pt-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Key Skills (Comma separated)</label>
+                  <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">Key Skills (Comma separated)</label>
                   <input
                     type="text"
                     value={skillsText}
@@ -99,7 +99,7 @@ export const Settings: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Years of Experience</label>
+                  <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">Years of Experience</label>
                   <input
                     type="number"
                     step="0.5"
@@ -111,7 +111,7 @@ export const Settings: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Education Background (Comma separated)</label>
+                <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">Education Background (Comma separated)</label>
                 <input
                   type="text"
                   value={educationText}
@@ -133,16 +133,16 @@ export const Settings: React.FC = () => {
           </div>
 
           {/* Password Reset */}
-          <div className="glass-panel rounded-3xl p-6 border border-white/5 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center space-x-2">
-              <Key className="text-indigo-400" size={16} />
+          <div className="glass-panel rounded-3xl p-6 border border-slate-200 dark:border-white/5 space-y-4">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+              <Key className="text-indigo-500 dark:text-indigo-400" size={16} />
               <span>Update Password Credentials</span>
             </h3>
 
             <form onSubmit={handleChangePassword} className="space-y-4 pt-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Current Password</label>
+                  <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">Current Password</label>
                   <input
                     type="password"
                     value={currentPassword}
@@ -154,7 +154,7 @@ export const Settings: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">New Password</label>
+                  <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">New Password</label>
                   <input
                     type="password"
                     value={newPassword}
@@ -169,7 +169,7 @@ export const Settings: React.FC = () => {
               <button
                 type="submit"
                 disabled={changingPassword}
-                className="px-5 py-2 rounded-xl font-bold text-xs text-white bg-slate-900 hover:bg-slate-800 border border-white/10 flex items-center space-x-2 disabled:opacity-50"
+                className="px-5 py-2 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-200 bg-slate-200 hover:bg-slate-300 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-300 dark:border-white/10 flex items-center space-x-2 disabled:opacity-50"
               >
                 {changingPassword ? <RefreshCw className="animate-spin" size={14} /> : <Key size={14} />}
                 <span>Update Password</span>
@@ -178,13 +178,13 @@ export const Settings: React.FC = () => {
           </div>
 
           {/* Danger Zone */}
-          <div className="glass-panel rounded-3xl p-6 border border-rose-500/10 space-y-4">
-            <h3 className="text-base font-bold text-rose-400 flex items-center space-x-2">
-              <Trash2 className="text-rose-400" size={16} />
+          <div className="glass-panel rounded-3xl p-6 border border-rose-200 dark:border-rose-500/10 space-y-4">
+            <h3 className="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center space-x-2">
+              <Trash2 className="text-rose-600 dark:text-rose-400" size={16} />
               <span>Danger Zone</span>
             </h3>
             
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600 dark:text-slate-400">
               Permanently delete your profile, stats records, completed interviews, and account metadata. This cannot be undone.
             </p>
 

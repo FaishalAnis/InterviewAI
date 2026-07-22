@@ -34,6 +34,9 @@ class InterviewCreate(BaseModel):
     resume_id: Optional[str] = None
     job_description_text: Optional[str] = None
 
+class InterviewComplete(BaseModel):
+    tab_switches: Optional[int] = None
+
 class InterviewResponse(BaseModel):
     id: str
     user_id: str

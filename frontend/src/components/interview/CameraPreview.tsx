@@ -17,6 +17,8 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({ isEnabled, onStrea
   const [posture, setPosture] = useState("Centered");
 
   useEffect(() => {
+    let activeStream: MediaStream | null = null;
+
     if (!isEnabled) {
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
@@ -32,6 +34,7 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({ isEnabled, onStrea
           audio: false
         });
         
+        activeStream = userStream;
         setStream(userStream);
         setError(null);
         
@@ -51,8 +54,8 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({ isEnabled, onStrea
     startCamera();
 
     return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
+      if (activeStream) {
+        activeStream.getTracks().forEach((track) => track.stop());
       }
     };
   }, [isEnabled]);

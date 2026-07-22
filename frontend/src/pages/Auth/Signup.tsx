@@ -36,7 +36,7 @@ export const Signup: React.FC = () => {
     setErrorMsg(null);
     try {
       await signup(data.email, data.fullName, data.password);
-      navigate("/dashboard");
+      navigate("/");
     } catch (err: any) {
       setErrorMsg(err.response?.data?.detail || "Registration failed. Email might already exist.");
     }
@@ -45,14 +45,14 @@ export const Signup: React.FC = () => {
   return (
     <Layout>
       <div className="flex-grow flex items-center justify-center py-10">
-        <div className="w-full max-w-md glass-panel p-8 rounded-3xl border border-white/5 shadow-2xl relative">
+        <div className="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-200 dark:border-white/5 shadow-2xl relative">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-extrabold text-white">Create Account</h2>
-            <p className="text-xs text-slate-400 mt-1">Get started practicing mock interviews instantly.</p>
+            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">Create Account</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Get started practicing mock interviews instantly.</p>
           </div>
 
           {errorMsg && (
-            <div className="mb-4 p-3 bg-rose-950/20 border border-rose-500/20 text-rose-400 text-xs rounded-xl flex items-center space-x-2">
+            <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-400 text-xs rounded-xl flex items-center space-x-2">
               <AlertCircle size={14} />
               <span>{errorMsg}</span>
             </div>
@@ -60,47 +60,47 @@ export const Signup: React.FC = () => {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
               <input
                 type="text"
                 placeholder="John Doe"
                 {...register("fullName")}
                 className="w-full px-4 py-2.5 rounded-xl text-sm glass-input"
               />
-              {errors.fullName && <span className="text-[10px] text-rose-400 mt-0.5 block">{errors.fullName.message}</span>}
+              {errors.fullName && <span className="text-[10px] text-rose-500 dark:text-rose-400 mt-0.5 block">{errors.fullName.message}</span>}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
               <input
                 type="email"
                 placeholder="you@example.com"
                 {...register("email")}
                 className="w-full px-4 py-2.5 rounded-xl text-sm glass-input"
               />
-              {errors.email && <span className="text-[10px] text-rose-400 mt-0.5 block">{errors.email.message}</span>}
+              {errors.email && <span className="text-[10px] text-rose-500 dark:text-rose-400 mt-0.5 block">{errors.email.message}</span>}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Password</label>
               <input
                 type="password"
                 placeholder="••••••••"
                 {...register("password")}
                 className="w-full px-4 py-2.5 rounded-xl text-sm glass-input"
               />
-              {errors.password && <span className="text-[10px] text-rose-400 mt-0.5 block">{errors.password.message}</span>}
+              {errors.password && <span className="text-[10px] text-rose-500 dark:text-rose-400 mt-0.5 block">{errors.password.message}</span>}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Confirm Password</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Confirm Password</label>
               <input
                 type="password"
                 placeholder="••••••••"
                 {...register("confirmPassword")}
                 className="w-full px-4 py-2.5 rounded-xl text-sm glass-input"
               />
-              {errors.confirmPassword && <span className="text-[10px] text-rose-400 mt-0.5 block">{errors.confirmPassword.message}</span>}
+              {errors.confirmPassword && <span className="text-[10px] text-rose-500 dark:text-rose-400 mt-0.5 block">{errors.confirmPassword.message}</span>}
             </div>
 
             <button
@@ -119,9 +119,9 @@ export const Signup: React.FC = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-xs text-slate-400">
+          <div className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary-400 hover:text-primary-300 font-semibold transition">
+            <Link to="/login" className="text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 font-semibold transition">
               Sign In
             </Link>
           </div>

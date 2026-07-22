@@ -12,7 +12,7 @@ class CodeSandbox:
         pass
 
     async def execute_code(
-        self, code: str, language: str, test_cases: List[Dict[str, Any]], timeout_seconds: float = 3.0
+        self, code: str, language: str, test_cases: List[Dict[str, Any]], timeout_seconds: float = 3.0, function_name: str = None
     ) -> Dict[str, Any]:
         """
         Executes code against test cases. Supported: python, javascript.
@@ -20,15 +20,15 @@ class CodeSandbox:
         """
         lang = language.lower()
         if lang == "python":
-            return await self._run_python(code, test_cases, timeout_seconds)
+            return await self._run_python(code, test_cases, timeout_seconds, function_name)
         elif lang in ["javascript", "js"]:
-            return await self._run_javascript(code, test_cases, timeout_seconds)
+            return await self._run_javascript(code, test_cases, timeout_seconds, function_name)
         else:
             # Fallback mock for compiled languages to ensure demo runs clean
             return await self._run_mock_compiled(code, lang, test_cases)
 
     async def _run_python(
-        self, code: str, test_cases: List[Dict[str, Any]], timeout: float
+        self, code: str, test_cases: List[Dict[str, Any]], timeout: float, function_name: str = None
     ) -> Dict[str, Any]:
         # Build driver script
         driver = f"""
@@ -45,17 +45,18 @@ for idx, tc in enumerate(test_cases):
     try:
         # Evaluate standard function inputs. Usually test cases contain inputs like "leetcode"
         # We find the user function and invoke it.
-        # For our mock question "First Non-Repeating Character", the function is first_unique(s)
-        # We can extract the function name or execute generically
         # Let's inspect globals for functions
-        funcs = [k for k, v in globals().items() if callable(v) and not k.startswith('_') and k != 'json' and k != 'sys']
-        if not funcs:
+        funcs = [k for k, v in globals().items() if callable(v) and getattr(v, '__module__', None) == '__main__' and not k.startswith('_') and k not in ['json', 'sys']]
+        
+        target_func_name = {repr(function_name)}
+        if target_func_name and target_func_name in globals() and callable(globals()[target_func_name]):
+            func = globals()[target_func_name]
+        elif funcs:
+            func = globals()[funcs[0]]
+        else:
             print(json.dumps({{"error": "No function defined in your code."}}))
             sys.exit(0)
             
-        func_name = funcs[0]
-        func = globals()[func_name]
-        
         # Prepare arguments (convert inputs to Python values if stringified json)
         inp = tc["input"]
         # Try to parse as json first, otherwise treat as raw string/value
@@ -64,7 +65,7 @@ for idx, tc in enumerate(test_cases):
         except Exception:
             val = inp
             
-        if isinstance(val, tuple) or isinstance(val, list):
+        if isinstance(val, list):
             out = func(*val)
         else:
             out = func(val)
@@ -164,7 +165,7 @@ print(json.dumps(results))
                 os.remove(temp_path)
 
     async def _run_javascript(
-        self, code: str, test_cases: List[Dict[str, Any]], timeout: float
+        self, code: str, test_cases: List[Dict[str, Any]], timeout: float, function_name: str = None
     ) -> Dict[str, Any]:
         # Check if node is available
         try:
@@ -181,14 +182,18 @@ const results = [];
 // Helper to inspect globals and find function
 const globalKeys = Object.keys(global);
 const candidateFuncs = Object.keys(this).filter(k => typeof this[k] === 'function' && k !== 'setTimeout' && k !== 'setInterval');
-const funcName = candidateFuncs[0];
+const expectedFuncName = {json.dumps(function_name)};
 
-if (!funcName) {{
+let func;
+if (expectedFuncName && typeof this[expectedFuncName] === 'function') {{
+    func = this[expectedFuncName];
+}} else if (candidateFuncs.length > 0) {{
+    const funcName = candidateFuncs[0];
+    func = this[funcName];
+}} else {{
     console.log(JSON.stringify({{error: "No function defined in code."}}));
     process.exit(0);
 }}
-
-const func = this[funcName];
 
 testCases.forEach((tc, idx) => {{
     try {{

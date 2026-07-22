@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { Layout } from "../components/layout/Layout";
-import { Search, SlidersHorizontal, Calendar, Award, ChevronRight, Trash2, RefreshCw } from "lucide-react";
+import { Search, SlidersHorizontal, Calendar, ChevronRight, Trash2, RefreshCw } from "lucide-react";
 
 export const History: React.FC = () => {
   const navigate = useNavigate();
@@ -49,8 +49,8 @@ export const History: React.FC = () => {
     <Layout>
       <div className="space-y-6 flex-grow">
         <div>
-          <h2 className="text-3xl font-extrabold text-white">Interview History</h2>
-          <p className="text-sm text-slate-400 mt-1">Search, review, and filter through all your completed mock sessions.</p>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Interview History</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Search, review, and filter through all your completed mock sessions.</p>
         </div>
 
         {/* Filter controls */}
@@ -71,7 +71,7 @@ export const History: React.FC = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none"
             >
               <option value="all">All Modes</option>
               <option value="voice">Voice Mode</option>
@@ -92,15 +92,15 @@ export const History: React.FC = () => {
               <div
                 key={int.id}
                 onClick={() => navigate(int.status === "completed" ? `/report/${int.id}` : `/interview/${int.id}`)}
-                className="glass-panel p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 cursor-pointer hover:bg-slate-800/40 transition"
+                className="glass-panel p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 cursor-pointer hover:bg-slate-100/50 dark:hover:bg-slate-800/40 transition"
               >
                 <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-slate-900/60 rounded-xl text-slate-400 border border-white/5 shrink-0">
+                  <div className="p-3 bg-slate-100 dark:bg-slate-900/60 rounded-xl text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/5 shrink-0">
                     <Calendar size={18} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white leading-none">{int.interview_type}</h3>
-                    <span className="text-[10px] text-slate-500 mt-1.5 block">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-none">{int.interview_type}</h3>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5 block">
                       {new Date(int.created_at).toLocaleDateString()} • {int.difficulty} • Mode: {int.mode}
                     </span>
                   </div>
@@ -116,7 +116,7 @@ export const History: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={(e) => handleDelete(int.id, e)}
-                      className="p-2 bg-slate-900 hover:bg-rose-950/20 text-slate-500 hover:text-rose-400 border border-white/5 rounded-lg transition"
+                      className="p-2 bg-slate-100 hover:bg-rose-100 dark:bg-slate-900 dark:hover:bg-rose-950/20 text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 border border-slate-200 dark:border-white/5 rounded-lg transition"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -127,7 +127,7 @@ export const History: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="glass-panel p-8 rounded-2xl text-center text-slate-500 text-xs">
+          <div className="glass-panel p-8 rounded-2xl text-center text-slate-500 dark:text-slate-400 text-xs">
             No past interview sessions found matching your search.
           </div>
         )}

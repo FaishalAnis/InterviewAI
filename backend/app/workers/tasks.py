@@ -25,7 +25,11 @@ def generate_report_task(interview_id: str):
 
 async def async_generate_report(interview_id: str):
     # Ensure database connection is active in the celery process context
-    await connect_to_mongo()
+    from app.core.database import db_instance
+    is_worker_db_session = False
+    if db_instance.client is None:
+        await connect_to_mongo()
+        is_worker_db_session = True
     
     try:
         interview_repo = InterviewRepository()
@@ -48,33 +52,41 @@ async def async_generate_report(interview_id: str):
             q_label = f"Q{idx+1}"
             
             # Confidence score
-            webcam = resp.get("webcam_metrics", {})
-            conf_val = webcam.get("confidence_estimate", 80.0)
+            webcam = resp.get("webcam_metrics") or {}
+            conf_val = webcam.get("confidence_estimate")
+            if conf_val is None:
+                conf_val = 80.0
             confidence_timeline.append({"label": q_label, "value": float(conf_val)})
             
             # Speaking speed
-            speed_val = webcam.get("speaking_speed_wpm", 130.0)
+            speed_val = webcam.get("speaking_speed_wpm")
+            if speed_val is None:
+                speed_val = 130.0
             speaking_speed_timeline.append({"label": q_label, "value": float(speed_val)})
             
         report_data["confidence_timeline"] = confidence_timeline
         report_data["speaking_speed_timeline"] = speaking_speed_timeline
         report_data["interview_id"] = interview_id
         report_data["user_id"] = interview["user_id"]
+        report_data["tab_switch_violations"] = interview.get("tab_switch_violations", 0)
         report_data["created_at"] = datetime.utcnow()
 
         # Map question detailed critique into report fields
         question_evals = []
         for idx, resp in enumerate(interview.get("responses", [])):
-            eval_data = resp.get("evaluation", {})
+            eval_data = resp.get("evaluation") or {}
+            score_val = eval_data.get("score")
+            if score_val is None:
+                score_val = 75.0
             question_evals.append({
                 "question_id": resp.get("question_id"),
                 "question_text": resp.get("question_text"),
                 "user_answer": resp.get("answer_text"),
-                "score": float(eval_data.get("score", 75)),
-                "feedback": eval_data.get("feedback", "No feedback provided."),
-                "strengths": eval_data.get("strengths", []),
-                "weaknesses": eval_data.get("weaknesses", []),
-                "suggested_answer": eval_data.get("suggested_answer", "No suggested answer.")
+                "score": float(score_val),
+                "feedback": eval_data.get("feedback") or "No feedback provided.",
+                "strengths": eval_data.get("strengths") or [],
+                "weaknesses": eval_data.get("weaknesses") or [],
+                "suggested_answer": eval_data.get("suggested_answer") or "No suggested answer."
             })
             
         report_data["question_evaluations"] = question_evals
@@ -93,4 +105,5 @@ async def async_generate_report(interview_id: str):
         logger.error(f"Error during report compilation task: {e}")
         return False
     finally:
-        await close_mongo_connection()
+        if is_worker_db_session:
+            await close_mongo_connection()

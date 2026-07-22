@@ -1,10 +1,10 @@
 import json
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form, Body
 from app.api.deps import get_current_user
 from app.repositories.interview import InterviewRepository
 from app.repositories.user import UserRepository
-from app.schemas.interview import InterviewCreate, InterviewResponse
+from app.schemas.interview import InterviewCreate, InterviewResponse, InterviewComplete
 from app.services.ai_service import ai_service
 from app.services.whisper_service import whisper_service
 from app.services.video_analysis import webcam_analyzer
@@ -24,6 +24,7 @@ async def create_interview(
         questions = await ai_service.generate_questions(
             interview_type=interview_in.interview_type,
             difficulty=interview_in.difficulty,
+            mode=interview_in.mode,
             resume_text=None,  # Resume parsing linked separately
             job_description=interview_in.job_description_text
         )
@@ -177,6 +178,7 @@ async def submit_response(
 @router.post("/{id}/complete")
 async def complete_interview(
     id: str,
+    req_body: Optional[InterviewComplete] = None,
     current_user: Dict[str, Any] = Depends(get_current_user)
 ) -> Any:
     interview_repo = InterviewRepository()
@@ -188,7 +190,8 @@ async def complete_interview(
         )
         
     # Mark completed in DB
-    completed = await interview_repo.complete_interview(id)
+    tab_switches = req_body.tab_switches if req_body else None
+    completed = await interview_repo.complete_interview(id, tab_switches=tab_switches)
     
     # Update Streak
     user_repo = UserRepository()
@@ -201,7 +204,7 @@ async def complete_interview(
         generate_report_task.delay(id)
     except Exception:
         # Fallback to run synchronously to support local development if Redis/Celery aren't running
-        await generate_report_task(id)
+        generate_report_task(id)
         
     return {
         "message": "Interview completed successfully. Report generation triggered.",
